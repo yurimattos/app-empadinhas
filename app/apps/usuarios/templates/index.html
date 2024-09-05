@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+<main>
+    {% include "partials/header.html" %}
+    
+    <div class="container mt-n10">
+        <div class="card">
+            <div class="card-header">Últimos Inventários</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Loja</th>
+                                {% for tipo in tipos_de_contagem %}
+                                <th class="text-center">{{tipo}}</th>
+                                {% endfor %}
+                                <th>Resumo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loja in lojas %}
+                            <tr>
+                                <td class="loja" id="{{loja.id}}">{{loja}}</td>
+                                {% for tipo in tipos_de_contagem %}
+                                <td class="{{loja.id}}" id="td{{loja.id}}{{tipo.id}}">
+                                </td>
+                                {% endfor %}
+                                <td id="td_resumo{{loja.id}}"></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+        </div>
+    </div>
+</main>
+    {% include "partials/footer.html" %}
+    {% block custom_scripts %}
+    <script src="{% static 'js/index.js' %}"></script>
+    {% endblock %}
+{% endblock %}

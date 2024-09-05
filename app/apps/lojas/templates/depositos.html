@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+    <div class="container mt-4">
+
+      {% include 'partials/messages.html' %}
+
+        <nav class="nav nav-borders">
+            <a class="nav-link " href="{% url 'produtos' %}">Produtos</a>
+            <a class="nav-link " href="{% url 'categorias' %}">Categorias</a>
+            <a class="nav-link " href="{% url 'lotes' %}">Lotes</a>
+            <a class="nav-link active" href="{% url 'depositos' %}">Depositos</a>
+        </nav>
+          
+        <hr class="mt-0 mb-4">
+
+
+              <div class="card card-header-actions mb-4">
+                <div class="card-header">
+                    Depositos
+                    <button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#categoriaModal">Novo</button>
+                </div>
+                <div class="card-body">
+
+                  <div class="datatable">
+                    <table class="table table-bordered table-hover" id="dataTable3" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                              <th>Nome</th>
+                              <th>Usuários</th>
+                              <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for deposito in depositos %}
+                            <tr>
+                                <td>{{deposito.nome}}</td>
+                                <td>
+                                  <ul>
+                                    {% for u in deposito.users.all %}
+                                    <li>{{u}}</li>
+                                    {% endfor %}
+                                  </ul>
+                                </td>
+                                <td>
+                                  <a class="btn btn-datatable btn-icon btn-transparent-dark mr-2" href="{% url 'editar_deposito' deposito.id %}"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Editar"><i data-feather="edit"></i></a>
+                                    <a class="btn btn-datatable btn-icon btn-transparent-dark confirm-delete" href="{% url 'desativar_deposito' deposito.id %}" onclick="confirmDelete()"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Desativar"><i data-feather="trash-2"></i></a>
+                                </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                </div>
+              </div>
+
+
+  </div>
+
+
+  <!-- Modal -->
+<div class="modal fade" id="categoriaModal" tabindex="-1" role="dialog" aria-labelledby="categoriaModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="categoriaModalLabel">Novo Deposito</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body">
+
+            <form method="post" class="prevent-double-click-form">
+              {% csrf_token %}
+              {% for field in form.visible_fields %}
+                <div class="form-group">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field|add_class:'form-control' }}
+                  {% for error in field.errors %}
+                    <span class="help-block">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endfor %}     
+
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
+            <button class="btn btn-primary prevent-double-click-button" type="submit" onclick="javascript:submitForm();">Salvar</button>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script>var confirmMsg = 'Gostaria realmente de desativar esse deposito?';</script>
+    <script src="{% static 'js/confirm_delete.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+{% endblock %}

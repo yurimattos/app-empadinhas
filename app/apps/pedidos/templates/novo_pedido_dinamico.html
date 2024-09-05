@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+  <div class="container mt-4">
+
+    <div class="card">
+      <div class="card-header">
+        Novo Pedido - {{loja.nome_da_loja}}
+      </div>
+        <div class="card-body">
+
+          {% if produtos == None %}
+
+          <p>Ainda não há uma tabela de preços cadastrada para a loja escolhida, por favor, contate o administrador do sistema.</p>
+
+          {% else %}
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-row">
+
+              <div class="form-group col-md-5">
+                <label for="id_produto">Produto</label>
+                <select name="produto" class="form-control" required id="id_item_pedido">
+                  <option disabled selected value>Selecione um Produto</option>
+                  {% for i in produtos %}
+                    <option value="{{i.id}}">{{i.produto}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group col-md-2">
+                <label for="id_quantidade">Quantidade</label>
+                <input type="number" name="quantidade" min="1" class="form-control input-quantidade" required="" id="id_quantidade">
+              </div>
+
+              <div class="form-group col-md-2">
+                <label for="preco">Preço</label>
+                <input type="number" name="preco" class="form-control input-preco" id="id_preco" readonly="">
+              </div>
+
+              <div class="form-group col-md-2">
+                    <label for="subtotal">Subtotal</label>
+                    <input type="number" name="subtotal" class="form-control input-subtotal" id="id_subtotal" readonly="">
+              </div>
+              
+            </div>
+
+            <div class="input_fields_wrap"></div>
+
+            <div class="form-group">
+              <button type="button" class="btn btn-danger btn-block" id="add_field_button">
+                  Adicionar mais 1 item 
+                <!-- <span class="glyphicon glyphicon-ok"></span> Adicionar mais 1 item -->
+              </button>
+            </div>
+
+            <hr>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+              
+                  <input type="number" class="form-control" id="id_total" name="total" placeholder="Total" readonly="">
+              </div>
+              <div class="form-group col-md-5"></div>
+              <div class="form-group col-md-1">
+                  <button type="submit" class="btn btn-success">
+                  <span class="glyphicon glyphicon-ok"></span> Salvar
+                  </button>
+              </div>
+            </div>
+
+          </form>
+
+          {% endif %}
+
+        </div>
+    </div>
+
+        
+
+  </div>
+  
+  {% autoescape off %}
+  <script type="text/javascript">
+      var precos = {{precos}};
+  </script>
+  {% endautoescape %}
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/pedidos_dinamico.js' %}"></script>
+    <script src="{% static 'js/enfatizar.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script>var confirmMsg = 'Gostaria realmente de desativar essa loja? Não será mais possível fazer pedidos para ela ou vincular usuários';</script>
+    <script src="{% static 'js/confirm_delete.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+{% endblock %}

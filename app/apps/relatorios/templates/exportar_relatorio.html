@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+<main>
+    {% include "partials/header.html" %}
+    
+    <div class="container mt-n10">
+        {% include 'partials/messages.html' %}
+        <div class="card">
+            <div class="card-header">Exportação de Relatórios</div>
+            <div class="card-body">
+                <form method="post" class="prevent-double-click-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="relatorio">Relatório</label>
+                        <select name="relatorio" id="relatorio" class="form-control" required>
+                            <option value selected>Escolha o Relatório</option>
+                            <option value="1">Pedidos - Financeiro</option>
+                            <option value="2">Pedidos - Detalhes</option>
+                            <option value="3">Perdas</option>
+                            <option value="4">Contagens</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="inicio">Início:</label>
+                            <input type="date" name="inicio" class="form-control" id="inicio" required>
+                        </div>
+                        <div class="form-group col">
+                            <label for="inicio">Fim:</label>
+                            <input type="date" name="fim" class="form-control" id="fim" required>
+                        </div>
+                    </div>
+                    <p>Obs: o período selecionado não deve ser maior que 31 dias.</p>
+                    <div class="form-group">
+                        <button class="btn btn-primary prevent-double-click-button" type="submit">Exportar</button>
+                    </div>
+                </form>
+                
+        </div>
+    </div>
+</main>
+    {% include "partials/footer.html" %}
+    {% block custom_scripts %}
+    <script src="{% static 'js/index.js' %}"></script>
+    {% endblock %}
+{% endblock %}

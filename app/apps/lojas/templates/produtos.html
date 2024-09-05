@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+    <div class="container mt-4">
+
+      {% include 'partials/messages.html' %}
+
+        <nav class="nav nav-borders">
+            <a class="nav-link active ml-0" href="{% url 'produtos' %}">Produtos</a>
+            <a class="nav-link" href="{% url 'categorias' %}">Categorias</a>
+            <a class="nav-link " href="{% url 'lotes' %}">Lotes</a>
+            <a class="nav-link " href="{% url 'depositos' %}">Depositos</a>
+        </nav>
+          
+        <hr class="mt-0 mb-4">
+
+
+              <div class="card card-header-actions mb-4">
+                <div class="card-header">
+                    Produtos
+                    <button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#categoriaModal">Novo</button>
+                </div>
+                <div class="card-body">
+
+                  <div class="datatable">
+                    <table class="table table-bordered table-hover" id="dataTable3" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                              <th>Nome</th>
+                              <th>Ref. em Estoque</th>
+                              <th>Categoria</th>
+                              <th>Lote</th>
+                              <th>Unidades</th>
+                              <th>Disponível</th>
+                              <th>Expedido por:</th>
+                              <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          {% for produto in produtos %}
+                            <tr>
+                                <td>{{produto.nome}}</td>
+                                <td>{{produto.grupo_produto}}</td>
+                                <td>{{produto.categoria}}</td>
+                                <td>{{produto.lote}}</td>
+                                <td>{{produto.unidade_por_lote}}</td>
+                                <td>
+                                  {% if produto.flag_disponivel %}
+                                  <span class="badge badge-teal">Sim</span>
+                                  {% else %}
+                                  <span class="badge badge-pink">Não</span>
+                                  {% endif %}
+                                </td>
+                                <td>{{produto.deposito}}</td>
+                                <td>
+                                    <a class="btn btn-datatable btn-icon btn-transparent-dark mr-2" href="{% url 'editar_produto' produto.id %}"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Editar"><i data-feather="edit"></i></a>
+                                    <a class="btn btn-datatable btn-icon btn-transparent-dark confirm-delete" href="{% url 'desativar_produto' produto.id %}" onclick="confirmDelete()" data-toggle="tooltip" data-placement="top" title="" data-original-title="Desativar"><i data-feather="trash-2"></i></a>
+                                </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                </div>
+              </div>
+
+
+  </div>
+
+
+  <!-- Modal -->
+<div class="modal fade" id="categoriaModal" tabindex="-1" role="dialog" aria-labelledby="categoriaModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="categoriaModalLabel">Novo Produto</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body">
+
+            <form method="post" class="prevent-double-click-form">
+              {% csrf_token %}
+              {% for field in form_produto.visible_fields %}
+                <div class="form-group">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field|add_class:'form-control' }}
+                  {% for error in field.errors %}
+                    <span class="help-block">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endfor %}     
+
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Fechar</button>
+            <button class="btn btn-primary prevent-double-click-button" type="submit" onclick="javascript:submitForm();">Salvar</button>
+          </div>
+        </form>
+      </div>
+  </div>
+</div>
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/masks.js' %}"></script>
+    <script src="{% static 'js/mask_money.js' %}"></script>
+    <script src="{% static 'js/custom_masks.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script>var confirmMsg = 'Gostaria realmente de desativar esse produto? Não será mais possível incluí-lo em tabelas de preços. O produto também será removido de todas as tabelas de preço.';</script>
+    <script src="{% static 'js/confirm_delete.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+{% endblock %}

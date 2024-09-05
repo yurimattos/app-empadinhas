@@ -1,0 +1,30 @@
+{% if pagination_obj.has_other_pages %}
+<p>{{pagination_obj.paginator.count}} resultado(s) | Página {{pagination_obj.number}} de {{pagination_obj.paginator.num_pages}}</p>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination flex-wrap">
+        {% if pagination_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="{{url_pagination}}{{ pagination_obj.previous_page_number }}">Anterior</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link">Anterior</a></li>
+        {% endif %}
+
+        {% for i in pagination_obj.paginator.page_range %}
+            {% if pagination_obj.number == i %}
+                <li class="page-item active"><a class="page-link">{{ i }}</a></li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="{{url_pagination}}{{ i }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="{{url_pagination}}{{ pagination_obj.next_page_number }}">Próxima</a></li>
+        {% else %}
+            <li class="page-item disabled"><a class="page-link">Próxima</a></li>
+        {% endif %}
+        
+    </ul>
+</nav>
+{% else %}
+<p>{{pagination_obj.paginator.count}} resultado(s)</p>
+{% endif %}

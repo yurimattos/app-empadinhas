@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+    <div class="container mt-4">
+
+      {% include 'partials/messages.html' %}
+
+        <nav class="nav nav-borders">
+            <a class="nav-link active ml-0 enfatizar" href="#" onclick="$('#div2').hide(); $('#div1').show(); ">Tabelas</a>
+            <a class="nav-link enfatizar" href="#" onclick="$('#div1').hide(); $('#div2').show(); ">Criar Nova</a>
+          </nav>
+          <hr class="mt-0 mb-4">
+
+        <div id="div1">
+        <div class="card">
+            <div class="card-header">Tabelas</div>
+              <div class="card-body">
+  
+                <div class="datatable">
+                  <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                          <tr>
+                            <th>Tabela</th>
+                            <th>Data de Criação</th>
+                            <th>Lojas</th>
+                            <th>Ações</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>Tabela</th>
+                          <th>Data de Criação</th>
+                          <th>Lojas</th>
+                          <th>Ações</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for tabela in tabelas %}
+                          <tr>
+                              <td>{{tabela.nome}}</td>
+                              <td>{{tabela.data_criacao}}</td>
+                              <td>
+                                <ul>
+                                  {% for loja in tabela.lojas_set.all %}
+                                  <li>{{loja.nome_da_loja}}</li>
+                                  {% endfor %}
+                                </ul>
+                              </td>
+                              <td>
+                                  <a class="btn btn-datatable btn-icon btn-transparent-dark mr-2" href="{% url 'editar_tabela_de_preco' tabela.id %}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Editar"><i data-feather="edit"></i></a>
+                                  <a class="btn btn-datatable btn-icon btn-transparent-dark confirm-delete" href="{% url 'desativar_tabela' tabela.id %}" onclick="confirmDelete()" data-toggle="tooltip" data-placement="top" title="" data-original-title="Desativar"><i data-feather="trash-2"></i></a>
+                              </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+  
+              </div>
+          </div>
+
+          <br>
+        </div>
+
+    <div id="div2" style="display: none;">
+      <div class="card">
+          <div class="card-header">Criar Nova Tabela de Preços</div>
+          <div class="card-body">
+            <form method="post" class="prevent-double-click-form">
+              {% csrf_token %}
+
+              <div class="form-row">
+              <label for="{{ form.nome.id_for_label }}">{{ form.nome.label }}</label>
+              {% render_field form.nome class="form-control" %}
+              </div>
+              <hr>
+              <br>
+
+              <h5 class="card-title text-primary mb-4">Informe o preço de cada produto:</h5>
+
+              {% for produto in produtos %}
+
+              <div class="input_fields_wrap">
+              <div class="form-row">
+
+                <div class="form-group col-11">
+                  <label for="id_do_produto_{{produto.id}}">{{ produto.nome }} - {{ produto.lote }} {{ produto.unidade_por_lote }}</label>
+                  <div class="text-xs text-muted">Preço de custo: R$ {{ produto.custo }}</div>
+                  <input type="hidden" id="id_do_produto_{{produto.id}}" name="id_do_produto" value="{{produto.id}}">
+                  {% render_field form.preco class="form-control brl-mask" placeholder='R$' %}
+                </div>
+
+                <div class="form-group col-1">
+                  
+                  <div class="text-center mt-5">
+                    <a href="#" class="remove_field" id="remover">
+                      <i class="fa fa-times fa-lg" style="color: pink;" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+              <hr>
+            </div>
+              {% endfor %}
+            
+              <a class="btn btn-secondary" type="button" data-dismiss="modal" href="{% url 'tabelas_de_preco' %}">Voltar</a>
+              <button class="btn btn-primary prevent-double-click-button" type="submit" onclick="javascript:submitForm();">Salvar</button>
+
+            </form>
+          </div>
+      </div>
+  </div>
+  </div>
+  
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/masks.js' %}"></script>
+    <script src="{% static 'js/mask_money.js' %}"></script>
+    <script src="{% static 'js/custom_masks.js' %}"></script>
+    <script src="{% static 'js/enfatizar.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script>var confirmMsg = 'Gostaria realmente de desativar essa tabela de preços? Não será mais possível alterar preços e, se houver lojas utilizando a tabela, será necessário desvincular manualmente';</script>
+    <script src="{% static 'js/confirm_delete.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+    <script src="{% static 'js/remover.js' %}"></script>
+{% endblock %}

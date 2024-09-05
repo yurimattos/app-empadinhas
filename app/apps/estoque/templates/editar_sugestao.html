@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+  <div class="container mt-4">
+
+    <div class="card">
+      <div class="card-header">Editar Tabela</div>
+      <div class="card-body">
+        <form method="post" class="prevent-double-click-form">
+          {% csrf_token %}
+
+          <div class="form-group">
+          <label for="{{ form.nome.id_for_label }}">{{ form.nome.label }}</label>
+          {% render_field form.nome class="form-control" %}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.lojas.id_for_label }}">{{ form.lojas.label }}</label>
+            {% render_field form.lojas class="form-control selectpicker" %}
+          </div>
+          <hr>
+          <br>
+
+          <h5 class="card-title text-primary mb-4">Informe a quantidade ideal para cada produto:</h5>
+
+          {% for item in itens %}
+
+          <div class="input_fields_wrap">
+            <div class="form-row">
+
+            <div class="form-group col-10">
+              
+              <label for="id_do_item_{{item.id}}">{{ item.produto }}</label>
+              <input type="hidden" id="id_do_item_{{item.id}}" name="id_do_item" value="{{item.id}}">
+              <input type="text" name="quantidade_do_item" class="form-control" id="quantidade_do_item_{{item.id}}" value="{{item.quantidade}}">
+            </div>
+
+            <div class="form-group col-2">                  
+              <div class="text-center mt-5">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="excluir" value="{{item.id}}" id="excluir_{{item.id}}" style="color: pink;">
+                  <label class="form-check-label" for="excluir_{{item.id}}" style="color: red;">
+                    Excluir
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr>
+          </div>
+          {% endfor %}
+
+          {% if itens_nao_add %}
+
+          {% for produto in itens_nao_add %}
+
+          
+          <div class="input_fields_wrap">
+          <div class="form-row">
+            <div class="form-group col-10">
+
+              <label for="id_do_produto_{{produto.id}}">{{ produto.nome }}</label>
+              <input type="hidden" id="id_do_produto_{{produto.id}}" name="id_do_produto" value="{{produto.id}}">
+              <input type="text" name="quantidade_do_produto" class="form-control" id="quantidade_do_produto_{{produto.id}}">
+             
+            </div>
+          
+
+          <div class="form-group col-2">
+            <div class="text-center mt-5">
+              <a href="#" class="remove_field" id="remover">
+                <i class="fa fa-times fa-lg" style="color: pink;" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+        <hr>
+        </div>
+
+          {% endfor %}
+
+          {% else %}
+          {% endif %}
+        
+        <a class="btn btn-secondary" type="button" data-dismiss="modal" href="{% url 'sugestoes_de_pedido' %}">Voltar</a>
+        <button class="btn btn-primary prevent-double-click-button" type="submit" onclick="javascript:submitForm();">Salvar</button>
+
+        </form>
+      </div>
+    </div>
+
+    
+  </div>
+  
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/remover.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+{% endblock %}

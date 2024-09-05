@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+    <div class="container mt-4">
+
+      {% include 'partials/messages.html' %}
+
+        <nav class="nav nav-borders">
+            <a class="nav-link active ml-0 enfatizar" href="#" onclick="$('#div2').hide(); $('#div1').show(); ">Lojas</a>
+            <a class="nav-link enfatizar" href="#" onclick="$('#div1').hide(); $('#div2').show(); ">Cadastrar Nova</a>
+          </nav>
+          <hr class="mt-0 mb-4">
+
+        <div id="div1">
+        <div class="card">
+            <div class="card-header">Lojas Ativas</div>
+              <div class="card-body">
+  
+                <div class="datatable">
+                  <table class="table table-bordered table-hover" id="dataTable3" width="100%" cellspacing="0">
+                      <thead>
+                          <tr>
+                            <th>Loja</th>
+                            <th>Pedido Mínimo</th>
+                            <th>Frete</th>
+                            <th>Tabela de Preço</th>
+                            <th>Ações</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>Loja</th>
+                          <th>Pedido Mínimo</th>
+                          <th>Frete</th>
+                          <th>Tabela de Preço</th>
+                          <th>Ações</th>
+                          </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for loja in lojas %}
+                          <tr>
+                              <td>{{loja.nome_da_loja}}</td>
+                              <td>R$ {{loja.pedido_minimo}}</td>
+                              <td>R$ {{loja.valor_frete}}</td>
+                              
+                              <td>
+                                {% if loja.tabela_de_preco %}
+                                  {% if loja.tabela_de_preco.flag_ativo == False %}
+                                    <span class="badge badge-pink">
+                                  {% else %}
+                                    <span class="badge badge-teal">
+                                  {% endif %}
+                                  {{loja.tabela_de_preco}}
+                                </span>
+                                {% else %} &nbsp; {% endif %}
+                              </td>
+
+                              
+                              
+                              <td>
+                                  <a class="btn btn-datatable btn-icon btn-transparent-dark mr-2" href="{% url 'editar_loja' loja.id %}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Editar"><i data-feather="edit"></i></a>
+                                  <a class="btn btn-datatable btn-icon btn-transparent-dark confirm-delete" href="{% url 'desativar_loja' loja.id %}" onclick="confirmDelete()" data-toggle="tooltip" data-placement="top" title="" data-original-title="Desativar"><i data-feather="trash-2"></i></a>
+                              </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                  </table>
+              </div>
+  
+              </div>
+          </div>
+
+          <br>
+        </div>
+
+    <div id="div2" style="display: none;">
+      <div class="card">
+          <div class="card-header">Cadastrar Nova</div>
+          <div class="card-body">
+            <form method="post" class="prevent-double-click-form">
+              {% csrf_token %}
+              {% for field in form.visible_fields %}
+                <div class="form-group">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field|add_class:'form-control' }}
+                  {% for error in field.errors %}
+                    <span class="help-block">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+              <a class="btn btn-secondary" type="button" data-dismiss="modal" href="{% url 'lojas' %}">Voltar</a>
+              <button class="btn btn-primary prevent-double-click-button" type="submit" onclick="javascript:submitForm();">Salvar</button>
+
+            </form>
+          </div>
+      </div>
+  </div>
+  </div>
+  
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/masks.js' %}"></script>
+    <script src="{% static 'js/mask_money.js' %}"></script>
+    <script src="{% static 'js/custom_masks.js' %}"></script>
+    <script src="{% static 'js/enfatizar.js' %}"></script>
+    <script src="{% static 'js/cep.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script>var confirmMsg = 'Gostaria realmente de desativar essa loja? Não será mais possível fazer pedidos para ela ou vincular usuários';</script>
+    <script src="{% static 'js/confirm_delete.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+    <script src="{% static 'js/scroll_down.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+{% endblock %}

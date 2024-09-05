@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+    
+  <div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
+        <div class="mr-4 mb-3 mb-sm-0">
+            <h1 class="mb-0">{{titulo}}</h1>
+            <div class="small">
+                {{pedido.data_criacao}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="div1">
+        <div class="col-lg-8 mb-4">
+            <div class="card mb-4">
+                <div class="card-header">Confirmação - Pedido #{{pedido.id}}</div>
+                  <div class="card-body">
+                    <form method="post" class="prevent-double-click-form">
+                      {% csrf_token %}
+
+                      
+                        <div class="row mb-3">
+                          <div class="col-6 text-sm"><strong>Pedido</strong></div>
+                          <div class="col-6 text-sm direita"><strong>Quantidade</strong></div>
+                        </div>
+                      
+
+                      {% for item in itens %}
+                      
+                      <div class="row">
+                        <div class="col-6">
+                          <div class="text-sm">{{item.produto}}</div>
+                          <div class="text-xs text-muted">Quantidade pedida: {{item.quantidade}} {{item.produto.lote.nome}}(s)</div>
+                        </div>
+                        <div class="col-6 direita">
+                          <input hidden name="item" value="{{item.id}}">
+                          <input type="number" min="0" value="{{item.quantidade}}" class="form-control" name="quantidade_confirmada" style="width: 100px;">
+                          <small class="form-text text-muted">
+                            {{item.produto.lote.nome}}(s)
+                          </small>
+                        </div>
+                      </div>
+                      <hr>
+                      
+                      {% endfor %}
+
+                      <div class="form-group mt-5">
+                        <label for="id_acao">Ação</label>
+                        <select name="acao" class="form-control" id="id_acao" required>
+                          <option value="" selected="">Escolha uma opção</option>
+                          <option value="True">Liberar Pedido</option>
+                          <option value="False">Recusar Pedido</option>
+                        </select>
+                      </div>
+
+                      <label for="FormControlTextarea1" class="font-weight-500 mt-2">Comentários (opcional)</label>
+                    <textarea class="form-control" id="FormControlTextarea1" rows="3" name="comentario" maxlength="150" placeholder="Use esse campo para observações"></textarea>
+
+                      <button type="submit" class="btn btn-success prevent-double-click-button mt-3" type="submit" onclick="javascript:submitForm();">Salvar</button>
+                    </form>
+      
+                  </div>
+              </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card mb-4">
+                <div class="card-header">Sumário</div>
+                  <div class="card-body">
+                    <h5 class="card-title">Resumo do Pedido</h5>
+                    <p class="text-sm">Loja: {{pedido.loja}}</p>
+                    <p class="text-sm">Valor do Pedido: R$ {{pedido.valor_total}}</p>
+                    {% if pedido.valor_entrega == 0.00 or pedido.valor_entrega is None %}
+                    <p class="text-sm">Valor do Frete: Grátis</p>
+                    {% else %}
+                    <p class="text-sm">Valor do Frete: R$ {{pedido.valor_entrega}}</p>
+                    {% endif %}
+                    <p class="text-sm">Data de Entrega: {{pedido.data_entrega|date:"d/M/Y"}}</p>
+                  </div>                
+            </div>
+
+            
+            <div class="card mb-4">
+              <div class="card-header">Comentários</div>
+                <div class="card-body">
+                  {% for c in comentarios %}
+                  <div class="timeline timeline-xs">
+                    <div class="timeline-item mb-3">
+                      <div class="timeline-item-marker">
+                        <div class="timeline-item-marker-text">{{c.usuario.first_name}}</div>
+                        <div class="timeline-item-marker-indicator"></div>
+                    </div>
+                    <div class="timeline-item-content">
+                      <div class="small">{{c.comentario}}</div>
+                    </div>
+                      
+                    </div>
+                  </div>
+                  {% empty %}
+                  <div class="text-center">
+                    <div class="small text-muted mb-2">Nenhum comentário</div>
+                  </div>
+                  {% endfor %}
+                  
+                </div>
+            </div>
+            
+
+        </div>
+
+    </div>
+
+
+  </div>
+  
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/enfatizar.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+    <script src="{% static 'js/remove_header.js' %}"></script>
+{% endblock %}

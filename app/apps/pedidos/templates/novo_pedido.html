@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}    
+  <div class="container mt-4">
+    <nav class="nav nav-borders">
+      {% for categoria in categorias %}
+      <a class="nav-link enfatizar" href="#" id="{{categoria}}">{{categoria.nome}}</a>
+      {% endfor %}
+      {% if categorias|length > 1 %}
+      <a class="nav-link enfatizar" href="#" id="_all">Mostrar Todas</a>
+      {% endif %}
+    </nav>
+    <hr class="mt-0 mb-4">
+
+    <div class="card mb-4">
+      <div class="card-header">
+        Novo Pedido - {{loja.nome_da_loja}}
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'fazer_pedido' loja.id %}"class="prevent-double-click-form">
+          {% csrf_token %}
+
+          <div class="form-row">
+            <h6 class="card-title text-primary mb-2"><label>Resumo do Estoque:</label></h6>
+          </div>
+          <ul>
+            {% for key, value in soma_por_categoria.items %}
+            <li>{{key}}: {{value}} unidades</li>
+            {% endfor %}
+          </ul>
+          <br>
+
+          {% for produto in produtos %}
+          <div class="mb-4 mt-2 filtrar {{produto.produto.categoria}}">
+            <label for="" class="form-label">{{produto.produto.nome}}</label>
+            {% if itens_contagem|get_item:produto.produto.grupo_produto.id == "" %}
+              <div class="text-xs text-muted">Preço: R$ {{produto.preco}} - Item não contabilizado no inventário</div>
+            {% else %}
+              <div class="text-xs text-muted">Preço: R$ {{produto.preco}} - {{itens_contagem|get_item:produto.produto.grupo_produto.id}} unidades em estoque</div>
+            {% endif %}
+            
+            <label for="" class="form-label">
+              <div class="small mt-3">Quantidade ({{produto.produto.lote}} com {{produto.produto.unidade_por_lote}}un):</div>
+            </label>
+
+            {% if mostrar_caixa_de_selecao == True %}
+            <div class="row ml-1 mb-2">
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="1" disabled>
+                <label class="form-check-label" for="inlineRadio1">1</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="2" disabled>
+                <label class="form-check-label" for="inlineRadio1">2</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="3" disabled>
+                <label class="form-check-label" for="inlineRadio1">3</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="4" disabled>
+                <label class="form-check-label" for="inlineRadio1">4</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="5" disabled>
+                <label class="form-check-label" for="inlineRadio1">5</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="6" disabled>
+                <label class="form-check-label" for="inlineRadio1">6</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="7" disabled>
+                <label class="form-check-label" for="inlineRadio1">7</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="8" disabled>
+                <label class="form-check-label" for="inlineRadio1">8</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="9" disabled>
+                <label class="form-check-label" for="inlineRadio1">9</label>
+              </div>
+              <div class="form-check form-check-inline ml-2">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions_{{produto.id}}" id="inlineRadio_{{produto.id}}" value="10" disabled>
+                <label class="form-check-label" for="inlineRadio1">10</label>
+              </div>
+            </div>
+            {% else %}
+            {% endif %}
+
+            <input hidden id={{produto.id}} class="input-preco" name="preco" value="{{produto.preco}}">
+            <input hidden id={{produto.id}} class="input-categoria" name="categoria" value="{{produto.produto.categoria.nome}}">
+            <input hidden name='deposito' value="{{produto.produto.deposito.id}}">
+            <input hidden name="produto" value="{{produto.id}}">
+            {% if sugestoes %}
+              <input id={{produto.id}} type="number" name="quantidade" min="1" class="form-control input-quantidade" placeholder="Informe a quantidade" value="{{sugestoes|get_item:produto.produto.id}}">
+            {% else %}
+              <input id={{produto.id}} type="number" name="quantidade" min="1" class="form-control input-quantidade" placeholder="Informe a quantidade">
+            {% endif %}
+            <input id={{produto.id}} type="text" name="subtotal" class="form-control brl-mask mt-2 input-subtotal" disabled="" placeholder="Subtotal - R$">
+            <hr>
+          </div>                     
+          {% endfor %}
+
+          <br>
+
+          <div class="form-row">
+            <h6 class="card-title text-primary mb-2"><label>Resumo do Pedido:</label></h6>
+          </div>
+          <ul id="resumo_volumes">
+          </ul>
+
+          <br>
+
+          <div class="form-row">
+            <h6 class="card-title text-primary mb-2"><label for="input-total">Valor do Pedido:</label></h6>
+            <input type="text" class="form-control brl-mask" id="input-total" name="total" placeholder="Total" disabled>
+          </div>
+
+          <br><br>
+          <div class="form-row">
+            <h6 class="card-title text-primary mb-2"><label for="input-entrega">Entrega:</label></h6>
+            <select name="dia_da_entrega" class="form-control" id="input-entrega" required>
+              <option value="" selected="">Escolha um dia para a entrega</option>
+
+              {% for i in dias_entrega %}
+                {% if forloop.first %} 
+                <option value="{{i.id}}" selected>{{i.label}}</option>
+                {% else %}
+                <option value="{{i.id}}">{{i.label}}</option>
+                {% endif %}            
+              {% endfor %}
+
+            </select>
+
+            <div class="small mt-3">Valor da entrega:</div>
+            <input hidden id="custo-entrega" value="{{loja.valor_frete}}">
+            <input type="text" class="form-control brl-mask mt-2" id="id_frete" name="frete" placeholder="Valor de Frete" value="R$ {{loja.valor_frete}}" disabled>
+            <input hidden id="pedido-minimo" value="{{loja.pedido_minimo}}">
+            <small class="form-text text-muted">Entrega sem custo em pedidos acima de R$ {{loja.pedido_minimo}}</small>
+
+          </div>
+
+          <div class="form-row">
+            <label for="FormControlTextarea1" class="font-weight-500 mt-2">Comentários (opcional)</label>
+            <textarea class="form-control" id="FormControlTextarea1" rows="3" name="comentario" maxlength="150" placeholder="Use esse campo para adicionar alguma observação ao pedido"></textarea>
+          </div>
+          <div class="form-row mt-4">
+            <a class="btn btn-pink" type="button" data-dismiss="modal" href="#">Sair</a>
+            <button type="submit" class="btn btn-success prevent-double-click-button ml-4" type="submit" onclick="javascript:submitForm();">Salvar</button>
+          </div>
+
+        </form>
+        
+      </div>
+    </div>
+       
+
+  </div>  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/pedidos.js' %}"></script>
+{% endblock %}

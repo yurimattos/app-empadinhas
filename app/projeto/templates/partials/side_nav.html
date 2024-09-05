@@ -1,0 +1,76 @@
+<div id="layoutSidenav_nav">
+    <nav class="sidenav shadow-right sidenav-light">
+        <div class="sidenav-menu">
+            <div class="nav accordion" id="accordionSidenav">
+
+                {% if user.user_type == 1 %}
+                <!-- Sidenav Menu Heading (Core)-->
+                <div class="sidenav-menu-heading">Configurações</div>
+                <!-- Sidenav Accordion (Dashboard)-->
+                <a class="nav-link collapsed" href="javascript:void(0);" data-toggle="collapse" data-target="#collapseEstabelecimentos" aria-expanded="false" aria-controls="collapseEstabelecimentos">
+                    <div class="nav-link-icon"><i data-feather="home"></i></div>
+                    Cadastros
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseEstabelecimentos" data-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav accordion" id="accordionSidenavPages">
+                        <a class="nav-link" href="{% url 'criar_usuario' %}">Usuários</a>
+                        <a class="nav-link" href="{% url 'lojas' %}">Lojas</a>
+                        <a class="nav-link" href="{% url 'produtos' %}">Produtos</a>
+                        <a class="nav-link" href="{% url 'depositos' %}">Depositos</a>
+                        <a class="nav-link" href="{% url 'tabelas_de_preco' %}">Tabelas de Preço</a>
+                        <a class="nav-link" href="{% url 'entregas' %}">Configurações de Entregas</a>
+                        <a class="nav-link" href="{% url 'tipos_perda' %}">Configurações de Perdas</a>
+                        <a class="nav-link" href="{% url 'tipos_de_contagem' %}">Configurações de Inventário</a>
+                        <a class="nav-link" href="{% url 'grupo_produtos' %}">Itens de Estoque</a>
+                    </nav>
+                </div>
+                {% else %}
+                {% endif %}
+                {% if user.user_type == 1 or user.user_type == 2 or user.user_type == 3 or user.user_type == 4 %}
+                <div class="sidenav-menu-heading">Lojas</div>
+                <!-- Sidenav Accordion (Dashboard)-->
+                <a class="nav-link" href="{% url 'pedidos' %}">
+                    <div class="nav-link-icon"><i data-feather="shopping-cart"></i></div>
+                    Pedidos
+                </a>
+                <a class="nav-link" href="{% url 'inventario' %}">
+                    <div class="nav-link-icon"><i data-feather="archive"></i></div>
+                    Inventário
+                </a>
+                <a class="nav-link" href="{% url 'sugestoes_de_pedido' %}">
+                    <div class="nav-link-icon"><i data-feather="zap"></i></div>
+                    Pedido Inteligente
+                </a>
+                <a class="nav-link" href="{% url 'perda' %}">
+                    <div class="nav-link-icon"><i data-feather="trash"></i></div>
+                    Perdas
+                </a>
+                {% endif %}
+                {% if user.user_type == 1 or user.user_type == 5 %}
+                <div class="sidenav-menu-heading">Fábrica</div>
+                <a class="nav-link" href="{% url 'expedicao' %}">
+                    <div class="nav-link-icon"><i data-feather="package"></i></div>
+                    Expedição
+                </a>
+                {% endif %}
+
+                {% if user.user_type == 1 %}
+                <div class="sidenav-menu-heading">Relatórios</div>
+                <a class="nav-link" href="{% url 'exportar_relatorio' %}">
+                    <div class="nav-link-icon"><i data-feather="download"></i></div>
+                    Exportar
+                </a>
+                {% endif %}
+ 
+            </div>
+        </div>
+        <!-- Sidenav Footer-->
+        <div class="sidenav-footer">
+            <div class="sidenav-footer-content">
+                <div class="sidenav-footer-subtitle">Logado como:</div>
+                <div class="sidenav-footer-title">{{ user.first_name }}</div>
+            </div>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,31 @@
+{% extends 'base_auth.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+        <label class="small mb-1" for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+        {{ field }}
+        {% if field.errors %}
+            <div class="alert alert-danger" role="alert">
+            {{ field.errors }}
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input" id="id_remember_me" name="remember_me" type="checkbox" />
+            <label class="custom-control-label" for="id_remember_me">Lembrar senha</label>
+        </div>
+    </div>
+    <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-0">
+        <a class="small" href="{% url 'password_reset' %}">Recuperar senha</a>
+        <button type="submit" class="btn btn-primary">Login</a>
+    </div>
+
+</form>
+
+{% endblock %}

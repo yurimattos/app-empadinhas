@@ -1,0 +1,24 @@
+{% extends 'base_auth.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<form method="post" class="prevent-double-click-form">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+        <label class="small mb-1" for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+        {% render_field field %}
+        {% if field.errors %}
+        <br>
+            <div class="alert alert-danger" role="alert">
+            {{ field.errors }}
+            </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <div class="form-group mt-4 mb-0"><button type="submit" class="btn btn-primary btn-block prevent-double-click-button" href="auth-login-basic.html" onclick="javascript:submitForm();">Criar Conta</button></div>
+
+</form>
+
+{% endblock %}

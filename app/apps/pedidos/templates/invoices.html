@@ -1,0 +1,310 @@
+{% load validade %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Empadinhas - Romaneios</title>
+        <style type="text/css">
+            @page {
+                size: a4 portrait;
+                margin: 1cm;
+            }
+            body {
+                font-weight: 200;
+                font-size: 12px;
+            }
+            .header {
+                font-size: 17px;
+                font-weight: 100;
+                text-align: right;
+                
+            }
+            .obs {
+                font-size: 10px;
+                font-weight: 100;
+            }
+            .title {
+                font-size: 18px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;  
+            }
+            .title span {
+                
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            .subtitulo {
+            	font-size: 14px;
+                font-weight: 600;
+            }
+            .destaque {
+                font-weight: 500;
+                text-align: top;
+            }
+            .direita {
+                text-align: right;
+            }
+            .tabela {
+                border: 1px solid black;
+            }
+            .celula {
+                height: 100px;
+            }
+            .center {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="sumario">
+            <table>
+                <tr>
+                    <td><img class="center" src="https://empadinhas.herokuapp.com/static/img/logo.jpeg" alt="" /></td>
+                    <td class="direita"><p class="header">Resumo dos Pedidos</p></td>
+                </tr>
+            </table>
+            <br><br>
+            <p><span class="subtitulo">{{ pedidos_selecionados|length }} Pedidos Selecionados:</span> {% for pedido in pedidos_selecionados %} #{{pedido.id}}, {% endfor %}</p>
+            <hr>
+
+            <p class="subtitulo" style="margin-bottom: 0;">Resumo dos Itens</p>
+            
+            {% for i in sumario %}
+            <p>{{i.produto__nome}}: {{i.q}} {{i.produto__lote__nome}}(s)</p>
+            {% endfor %}
+            <pdf:nextpage />
+        </div>
+
+    {% for pedido in pedidos_selecionados %}
+    
+        <div class="via_fornecedor">
+        <table>
+            <tr>
+                <td><img class="center" src="https://empadinhas.herokuapp.com/static/img/logo.jpeg" alt="" /></td>
+                <td class="direita"><p class="header">Recibo de Entrega - 1° Via - Fornecedor</p></td>
+            </tr>
+        </table>
+        <br>
+    <br>
+    <table>
+        <tr>
+            <td><span class="subtitulo">Pedido #{{pedido.id}}</span></td>
+            <td class="direita"><span class="destaque">Data e Hora do Pedido: </span>{{pedido.data_criacao|date:"d/M/Y"}} - {{pedido.data_criacao|time:"H:i"}}</td>
+        </tr>
+    </table>    
+    <hr>
+    <p class="subtitulo" style="margin-bottom: 0;">Informações da Entrega</p>
+    <table>
+        <tr>
+            <td><span class="destaque">Local: </span>{{pedido.loja}}</td>
+            <td class="direita"><span class="destaque">Data da Entrega: </span>{{pedido.data_entrega|date:"d/M/Y"}}</td>
+        </tr>
+    </table>
+   
+    <p class="subtitulo" style="margin-bottom: 0;">Dados Cadastrais</p>
+    <table>
+        <tr>
+            <td><span class="destaque">Razão Social: </span>{{pedido.loja.razao_social}} </td>
+            <td class="direita"><span class="destaque">Endereço: </span>{{pedido.loja.endereco}} - n° {{pedido.loja.numero}}</td>
+        </tr>
+        <tr>
+            <td><span class="destaque">CNPJ: </span>{{pedido.loja.cnpj}}</td>
+            <td class="direita"><span class="destaque">Complemento: </span>{{pedido.loja.complemento}}</td>       
+        </tr>
+        <tr>
+            <td></td>          
+            <td class="direita"><span class="destaque">Cidade/UF: </span>{{pedido.loja.cidade}} - {{pedido.loja.uf}}</td>
+        </tr>
+    </table>
+    <hr>
+    <p class="subtitulo" style="margin-bottom: 0;">Produtos</p>
+    <table class="tabela">
+        <thead>
+            <th style="height: 25px;">Item</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Unidades</th>
+            <th>Conferencia</th>
+        </thead>
+        <tbody>
+            {% for item in pedido.itens_do_pedido.all %}
+            <tr>
+                <td style="text-align: center; width:10%; height: 19px;">{{ forloop.counter }}</td>
+                <td style="text-align: center; width:45%;">{{item.produto}}</td>
+                <td style="text-align: center; width:20%;">{{item.quantidade_confirmada|default_if_none:""}} {{item.produto.lote}}(s) de {{item.produto.unidade_por_lote}} unds</td>
+                <td style="text-align: center; width:15%;">{% widthratio item.quantidade_confirmada 1 item.produto.unidade_por_lote %} unidades</td>
+                <td style="text-align: center; width:10%;"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p class="obs">
+        Validade das Empadas: {{ pedido.data_criacao|validade:10 }} (resfriado de 0 a 4 graus) / {{ pedido.data_criacao|validade:30 }} (congelado abaixo de 0 grau)
+    </p>
+    <div>
+        <p class="subtitulo" style="margin-bottom: 0;">Resumo:</p>
+        <ul>
+        {% for i in volumes %}
+            {% if pedido.id == i.pedido %}
+                <li>{{i.produto__categoria__nome}} - {{i.produto__lote__nome}} de {{i.produto__unidade_por_lote}} unidade(s): {{i.q}} volume(s)</li>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+    <!-- {% for item in pedido.itens_do_pedido.all %}
+    {% if item.produto.categoria.observacoes %}
+    <p class="obs">
+        {% ifchanged %}*{{item.produto.categoria}}: {{item.produto.categoria.observacoes}}{% endifchanged %}
+    </p>
+    {% else %}
+    {% endif %}
+    {% endfor %} -->
+    <br>
+    <p class="subtitulo" style="margin-bottom: 0;">Observações</p>
+    <table class="tabela">
+        <tr>
+            <td class="celula"></td>
+        </tr>
+    </table>
+    <div>
+        <br><br>
+        <table>
+            <tr>
+                <td>
+                    <p style="text-align: center; margin-bottom: 0;">______________________________________________</p>
+                    <p style="text-align: center; margin-top: 0;">Entregue por</p>
+                </td>
+                <td>
+                    <p style="text-align: center; margin-bottom: 0;">______________________________________________</p>
+                    <p style="text-align: center; margin-top: 0;">Recebido por</p>
+                </td>
+            </tr>
+        </table>           
+    </div>
+    
+    <pdf:nextpage />
+        </div>
+        <div class="via_cliente">
+            <table>
+                <tr>
+                    <td><img class="center" src="https://empadinhas.herokuapp.com/static/img/logo.jpeg" alt="" /></td>
+                    <td class="direita"><p class="header">Recibo de Entrega - 2° Via - Cliente</p></td>
+                </tr>
+            </table>
+            <br>
+        <br>
+        <table>
+            <tr>
+                <td><span class="subtitulo">Pedido #{{pedido.id}}</span></td>
+                <td class="direita"><span class="destaque">Data e Hora do Pedido: </span>{{pedido.data_criacao|date:"d/M/Y"}} - {{pedido.data_criacao|time:"H:i"}}</td>
+            </tr>
+        </table>    
+        <hr>
+        <p class="subtitulo" style="margin-bottom: 0;">Informações da Entrega</p>
+        <table>
+            <tr>
+                <td><span class="destaque">Local: </span>{{pedido.loja}}</td>
+                <td class="direita"><span class="destaque">Data da Entrega: </span>{{pedido.data_entrega|date:"d/M/Y"}}</td>
+            </tr>
+        </table>
+       
+        <p class="subtitulo" style="margin-bottom: 0;">Dados Cadastrais</p>
+        <table>
+            <tr>
+                <td><span class="destaque">Razão Social: </span>{{pedido.loja.razao_social}} </td>
+                <td class="direita"><span class="destaque">Endereço: </span>{{pedido.loja.endereco}} - n° {{pedido.loja.numero}}</td>
+            </tr>
+            <tr>
+                <td><span class="destaque">CNPJ: </span>{{pedido.loja.cnpj}}</td>
+                <td class="direita"><span class="destaque">Complemento: </span>{{pedido.loja.complemento}}</td>       
+            </tr>
+            <tr>
+                <td></td>          
+                <td class="direita"><span class="destaque">Cidade/UF: </span>{{pedido.loja.cidade}} - {{pedido.loja.uf}}</td>
+            </tr>
+        </table>
+        <hr>
+        <p class="subtitulo" style="margin-bottom: 0;">Produtos</p>
+        <table class="tabela">
+            <thead>
+                <th style="height: 25px;">Item</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Unidades</th>
+                <th>Conferencia</th>
+            </thead>
+            <tbody>
+                {% for item in pedido.itens_do_pedido.all %}
+                <tr>
+                    <td style="text-align: center; width:10%; height: 19px;">{{ forloop.counter }}</td>
+                    <td style="text-align: center; width:45%;">{{item.produto}}</td>
+                    <td style="text-align: center; width:20%;">{{item.quantidade_confirmada|default_if_none:""}} {{item.produto.lote}}(s) de {{item.produto.unidade_por_lote}} unds</td>
+                    <td style="text-align: center; width:15%;">{% widthratio item.quantidade_confirmada 1 item.produto.unidade_por_lote %} unidades</td>
+                    <td style="text-align: center; width:10%;"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="obs">
+            Validade das Empadas: {{ pedido.data_criacao|validade:10 }} (resfriadas de 0 a 4 graus) ou {{ pedido.data_criacao|validade:30 }} (congeladas abaixo de 0 grau)
+        </p>
+        <div>
+            <p class="subtitulo" style="margin-bottom: 0;">Resumo:</p>
+            <ul>
+            {% for i in volumes %}
+                {% if pedido.id == i.pedido %}
+                    <li>{{i.produto__categoria__nome}} - {{i.produto__lote__nome}} de {{i.produto__unidade_por_lote}} unidade(s): {{i.q}} volume(s)</li>
+                {% else %}
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        <!-- {% for item in pedido.itens_do_pedido.all %}
+        {% if item.produto.categoria.observacoes %}
+        <p class="obs">
+            {% ifchanged %}*{{item.produto.categoria}}: {{item.produto.categoria.observacoes}}{% endifchanged %}
+        </p>
+        {% else %}
+        {% endif %}
+        {% endfor %} -->
+        <br>
+        <p class="subtitulo" style="margin-bottom: 0;">Observações</p>
+        <table class="tabela">
+            <tr>
+                <td class="celula"></td>
+            </tr>
+        </table>
+        <div>
+            <br><br>
+            <table>
+                <tr>
+                    <td>
+                        <p style="text-align: center; margin-bottom: 0;">______________________________________________</p>
+                        <p style="text-align: center; margin-top: 0;">Entregue por</p>
+                    </td>
+                    <td>
+                        <p style="text-align: center; margin-bottom: 0;">______________________________________________</p>
+                        <p style="text-align: center; margin-top: 0;">Recebido por</p>
+                    </td>
+                </tr>
+            </table>           
+        </div>
+        <pdf:nextpage />
+        </div>
+    {% endfor %}  
+    </body>
+</html>

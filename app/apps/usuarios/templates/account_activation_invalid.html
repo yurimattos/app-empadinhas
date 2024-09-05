@@ -1,0 +1,9 @@
+{% extends 'base_auth.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<p>Link para ativação de conta inválido. Por favor, contate o administrador do sistema</p>
+<a class="small" href="{% url 'criar_usuario' %}">Voltar</a>
+
+{% endblock %}

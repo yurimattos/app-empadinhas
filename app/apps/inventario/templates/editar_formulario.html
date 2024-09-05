@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+    <div class="container mt-4">
+
+      {% include 'partials/messages.html' %}
+
+    <div id="div2">
+      <div class="card">
+          <div class="card-header">Editar Formulário</div>
+          <div class="card-body">
+            <form method="post" class="prevent-double-click-form">
+              {% csrf_token %}
+              {% for field in form.visible_fields %}
+                <div class="form-group">
+                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field|add_class:'form-control' }}
+                  {% for error in field.errors %}
+                    <span class="help-block">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+
+              {% for categoria in categorias %}
+              <div class="form-check">
+                <h6 class="text-primary card-title mb-3 mt-3">
+                  <input class="form-check-input categoria" type="checkbox" name="categorias" value="" id="{{categoria.id}}">
+                  {{categoria.nome}}:
+                </h6>
+              </div>
+
+                {% for produto in produtos %}
+
+                  {% if produto.produtos_relacionados.first.categoria == categoria %}
+                    <div class="form-check">
+                      {% if produto in produtos_ja_inclusos %}
+                        <input class="form-check-input {{categoria.id}}" type="checkbox" name="produtos" value="{{produto.id}}" id="{{produto.id}}" checked>
+                      {% else %}
+                        <input class="form-check-input {{categoria.id}}" type="checkbox" name="produtos" value="{{produto.id}}" id="{{produto.id}}">
+                      {% endif %}
+
+                      <label class="form-check-label" for="{{produto.id}}" >
+                        {{produto.nome}} 
+                      </label>
+                    </div>
+                  {% endif %}
+  
+                {% endfor %}
+
+              {% endfor %}
+
+              <br>
+
+              <a class="btn btn-secondary" type="button" href="{% url 'formularios' %}">Voltar</a>
+              <button class="btn btn-primary prevent-double-click-button" type="submit" onclick="javascript:submitForm();">Salvar</button>
+
+            </form>
+          </div>
+      </div>
+  </div>
+  </div>
+  
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+
+    <script src="{% static 'js/enfatizar.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script>
+      $(".categoria").click(function() {
+        let marcado = $(this).prop('checked')
+        let categoria = $(this).attr('id')
+        let categoria_classe = '.' + categoria
+
+        if ( marcado == true ) {
+          $(categoria_classe).prop('checked', true)
+        } else {
+          $(categoria_classe).prop('checked', false)    
+        }      
+        
+      })
+      
+    </script>
+    <script src="{% static 'js/scroll_down.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+{% endblock %}

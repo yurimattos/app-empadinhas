@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+  <div class="container mt-4">
+
+    
+
+    <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
+        <div class="mr-4 mb-3 mb-sm-0">
+            <h1 class="mb-0">{{titulo}}</h1>
+            <div class="small">
+                {{pedido.data_criacao}}
+            </div>
+        </div>
+    </div>
+
+    {% if role_gerente %}
+
+    <div class="row" id="div1">
+        <div class="col-lg-8 mb-4">
+            <div class="card mb-4">
+                <div class="card-header">Itens - Pedido #{{pedido.id}}</div>
+                  <div class="card-body">
+      
+                    <div class="datatable">
+                      <table class="table table-bordered table-hover" id="dataTable2" width="100%" cellspacing="0">
+                          <thead>
+                              <tr>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Quantidade</th>
+                                <th>Quantidade Confirmada</th>
+                                <th>Quantidade Recebida</th>
+                                <th>Subtotal</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                            {% for item in itens %}
+                              <tr>
+                                  <td>{{item.produto}}</td>
+                                  <td>R$ {{item.preco}}</td>
+                                  <td class="text-center">{{item.quantidade}}</td>
+                                  <td class="text-center">{{item.quantidade_confirmada|default_if_none:""}}</td>
+                                  <td class="text-center">{{item.quantidade_recebida|default_if_none:""}}</td>
+                                  <td>R$ {{item.valor_total}}</td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+      
+                  </div>
+              </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card mb-4">
+                <div class="card-header">Sumário</div>
+                  <div class="card-body">
+                    <h5 class="card-title">Resumo do Pedido</h5>
+                    <p class="text-sm">Valor do Pedido: R$ {{pedido.valor_total}}</p>
+                    {% if pedido.valor_entrega == 0.00 or pedido.valor_entrega is None %}
+                    <p class="text-sm">Valor do Frete: Grátis</p>
+                    {% else %}
+                    <p class="text-sm">Valor do Frete: R$ {{pedido.valor_entrega}}</p>
+                    {% endif %}
+                    <p class="text-sm">Data de Entrega: {{pedido.data_entrega|date:"d/M/Y"}}</p>
+                    <p class="text-sm">Status: <span class="badge badge-{{pedido.status.cor}}">{{pedido.status|title}}</span> </p>
+                    <hr>
+                    <div class="text-center">
+                    {% if pedido.status.nome == 'pendente' %}
+                    <a class="btn btn-pink btn-sm p-3 mb-2" href="{% url 'cancelar_pedido' pedido.id %}">Cancelar Pedido</a>
+                    {% elif pedido.status.nome == 'confirmado' %}
+                    <a class="btn btn-teal btn-sm p-3 mb-2" href="#" onclick="$('#div1').hide(); $('#div2').show(); ">Confirmar Recebimento</a>
+                    {% else %}
+                    
+                    {% endif %}
+                    
+                    </div>
+
+                  </div>                
+            </div>
+
+            
+            <div class="card mb-4">
+              <div class="card-header">Comentários</div>
+                <div class="card-body">
+                  {% for c in comentarios %}
+                  <div class="timeline timeline-xs">
+                    <div class="timeline-item mb-3">
+                      <div class="timeline-item-marker">
+                        <div class="timeline-item-marker-text">{{c.usuario.first_name}}</div>
+                        <div class="timeline-item-marker-indicator"></div>
+                    </div>
+                    <div class="timeline-item-content">
+                      <div class="small">{{c.comentario}}</div>
+                    </div>
+                      
+                    </div>
+                  </div>
+                  {% empty %}
+                  <div class="text-center">
+                    <div class="small text-muted mb-2">Nenhum comentário</div>
+                  </div>
+                  {% endfor %}
+                  
+                </div>
+            </div>
+            
+
+        </div>
+
+    </div>
+
+    {% include "partials/confirmacao_de_entrega.html" with style="style='display: none;'" %}
+
+    {% else %}
+
+      {% if pedido.status.nome == 'confirmado' %}
+
+        {% include "partials/confirmacao_de_entrega.html" %}
+
+      {% else %}
+
+        {% include "partials/itens_pedidos.html" %}
+      
+      {% endif %}
+
+    {% endif %}
+
+  </div>
+  
+
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/enfatizar.js' %}"></script>
+    <script src="{% static 'js/duplo_clique.js' %}"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables.js' %}"></script>
+    <script src="{% static 'js/remove_header.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% autoescape off %}
+Olá {{ user.username }},
+
+Por favor, clique no link abaixo para ativar sua conta:
+
+http://{{ domain }}{% url 'activate_user' uidb64=uid token=token %}
+
+Após o primeiro acesso, não esqueça de alterar sua senha!
+{% endautoescape %}

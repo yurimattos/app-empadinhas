@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main>
+{% include "partials/header_minimal.html" %}
+
+    
+  <div class="container mt-4">
+
+
+    <div class="card mb-4">
+      <div class="card-header">
+        Erro - Loja não possui tabela de preços
+      </div>
+        <div class="card-body">
+
+            Essa loja ainda não possui uma tabela de preços associada. Entre em contato com o administrador.
+
+        </div>
+    </div>
+
+        
+
+  </div>
+  
+</main>
+{% include "partials/footer.html" %}
+
+{% endblock %}
+
+{% block custom_scripts %}
+
+{% endblock %}

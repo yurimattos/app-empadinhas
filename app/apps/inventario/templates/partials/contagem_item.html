@@ -1,0 +1,66 @@
+{% for i in ultimos_inventarios.contado %}
+<div class="list-group-item list-group-item-action flex-column align-items-start ">
+    <div class="d-flex w-100 justify-content-between">
+        <h6 class="mt-2">{{i.tipo_de_contagem|capfirst}}</h6>
+        <small>
+            <a type="button" class="btn btn-secondary btn-sm"
+            href="{% url 'iniciar_nova_contagem' i.loja.id i.tipo_de_contagem.id %}"
+            >
+                Nova
+            </a>
+        </small>
+    </div>
+    <hr>
+
+    <div class="mt-4">
+        {% if i.data_conclusao %}
+            <small>Última contagem: {{i.ultima_atualizacao|date:"d/M"}} {{i.ultima_atualizacao|time:"H:i"}}</small>
+        {% endif %}
+
+        {% if i.status != 'Concluído' %}
+            <small>Formulários:</small>
+
+            {% for formulario in i.formularios.all %}
+
+                {% if formulario.data_conclusao %}
+                    <div class="row">
+                        <button class="btn btn-dark btn-block mb-2 mt-2" disabled>
+                            {{formulario.formulario}}
+                            <i class="fa fa-check ml-2"></i>
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <a type="button" class="btn btn-primary btn-block mb-2 mt-2" href="{% url 'contar' formulario.id %}">{{formulario.formulario}}</a>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+
+        {% endif %}
+    </div>
+    <br><br>
+
+</div>
+{% endfor %}
+
+
+
+{% for tipo_de_contagem in ultimos_inventarios.nao_contado %}
+<div class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+        <h6 class="mt-2">{{tipo_de_contagem.nome|capfirst}}</h6>
+        <small>
+            <a type="button" class="btn btn-secondary btn-sm"
+            href="{% url 'iniciar_nova_contagem' loja_selecionada.id tipo_de_contagem.id %}"
+            >
+                Nova
+            </a>
+        </small>
+    </div>
+    <hr>
+    <div class="mt-4">
+        <small>Nenhuma contagem recente encontrada. Inicie uma nova contagem.</small>
+    </div>   
+</div>
+{% endfor %}
